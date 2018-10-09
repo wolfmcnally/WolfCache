@@ -27,6 +27,7 @@ import CoreGraphics
 import WolfLog
 import WolfFoundation
 import WolfConcurrency
+import WolfPipe
 
 public enum CacheError: Error {
     case miss(URL)
@@ -124,7 +125,7 @@ public class Cache<T: Serializable> {
 
     private func retrieveObject(at layerIndex: Int, for url: URL) -> Promise<ValueType> {
         let layer = layers[layerIndex]
-        return layer.retrieveData(for: url).then { data in
+        return layer.retrieveData(for: url) ||> { data in
             do {
                 let obj: ValueType = try SerializableType.deserialize(from: data)
                 logInfo("Found object for URL: \(url) layer: \(layer)", obj: self, group: .cache)
@@ -141,22 +142,22 @@ public class Cache<T: Serializable> {
                 }
                 throw error
             }
-            }.recover { (error, promise) in
-                guard error.isCacheMiss else {
-                    promise.fail(error)
-                    return
-                }
+        } ||? { (error, promise) in
+            guard error.isCacheMiss else {
+                promise.fail(error)
+                return
+            }
 
-                guard layerIndex < self.layers.count - 1 else {
-                    promise.fail(CacheError.miss(url))
-                    return
-                }
+            guard layerIndex < self.layers.count - 1 else {
+                promise.fail(CacheError.miss(url))
+                return
+            }
 
-                self.retrieveObject(at: layerIndex + 1, for: url).then { value in
-                    promise.keep(value)
-                    }.catch { error in
-                        promise.fail(error)
-                    }.run()
+            run <| self.retrieveObject(at: layerIndex + 1, for: url) ||> { value in
+                promise.keep(value)
+            } ||! { error in
+                promise.fail(error)
+            }
         }
     }
 }

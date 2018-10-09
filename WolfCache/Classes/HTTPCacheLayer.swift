@@ -70,7 +70,7 @@ public class HTTPCacheLayer: CacheLayer {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
         request.setMethod(.get)
 
-        return HTTP.retrieveData(with: request).thenWith { promise in
+        return HTTP.retrieveData(with: request) ||% { promise in
             let task = promise.task as! URLSessionDataTask
             let response = task.response as! HTTPURLResponse
 
@@ -107,12 +107,12 @@ public class HTTPCacheLayer: CacheLayer {
             } else {
                 return data
             }
-            }.recover { (error, promise) in
-                if error.httpStatusCode == .notFound {
-                    promise.fail(CacheError.miss(url))
-                } else {
-                    promise.fail(error)
-                }
+        } ||? { (error, promise) in
+            if error.httpStatusCode == .notFound {
+                promise.fail(CacheError.miss(url))
+            } else {
+                promise.fail(error)
+            }
         }
     }
 
