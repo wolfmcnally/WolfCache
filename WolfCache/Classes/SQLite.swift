@@ -71,7 +71,7 @@ public enum SQLiteStepResult: Int32 {
 let sqliteStatic = unsafeBitCast(0, to: sqlite3_destructor_type.self)
 let sqliteTransient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
-extension SQLiteReturnCode: DescriptiveError {
+extension SQLiteReturnCode: CodedError {
     public var message: String {
         return "\(rawValue)"
     }
