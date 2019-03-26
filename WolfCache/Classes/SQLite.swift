@@ -162,7 +162,8 @@ public class SQLite {
 
         public func bindParameter(atIndex index: Int, toBLOB data: Data) {
             _ = data.withUnsafeBytes { p in
-                sqlite3_bind_blob(statement, Int32(index), p, Int32(data.count), sqliteTransient)
+                let p2 = UnsafeRawPointer(p.bindMemory(to: Void.self).baseAddress!)
+                sqlite3_bind_blob(statement, Int32(index), p2, Int32(data.count), sqliteTransient)
             }
         }
 
