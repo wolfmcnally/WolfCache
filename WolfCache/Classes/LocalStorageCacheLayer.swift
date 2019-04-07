@@ -24,6 +24,7 @@
 
 import Foundation
 import WolfLog
+import WolfNIO
 import WolfConcurrency
 
 public class LocalStorageCacheLayer: CacheLayer {
@@ -195,17 +196,10 @@ public class LocalStorageCacheLayer: CacheLayer {
         return sizeReclaimed
     }
 
-    public func retrieveData(for url: URL) -> DataPromise {
-        func perform(promise: DataPromise) {
-            logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
-            dispatchOnBackground {
-                self.serializer.dispatch {
-                    _perform(promise: promise)
-                }
-            }
-        }
+    public func retrieveData(for url: URL) -> Future<Data> {
+        let promise = cacheEventLoopGroup.next().makePromise(of: Data.self)
 
-        func _perform(promise: DataPromise) {
+        func _perform() {
             do {
                 let selectStatement = try db.prepare(sql: "SELECT data FROM cache where url=:url")
                 selectStatement.bindParameter(named: "url", toURL: url)
@@ -213,7 +207,7 @@ public class LocalStorageCacheLayer: CacheLayer {
                 case .row:
                     let data = selectStatement.blobValue(forColumnIndex: 0)!
                     dispatchOnMain {
-                        promise.keep(data)
+                        promise.succeed(data)
                     }
 
                     let updateStatement = try db.prepare(sql: "UPDATE cache SET dateAccessed=CURRENT_TIMESTAMP WHERE url=:url")
@@ -233,7 +227,14 @@ public class LocalStorageCacheLayer: CacheLayer {
             }
         }
 
-        return DataPromise(with: perform)
+        logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
+        dispatchOnBackground {
+            self.serializer.dispatch {
+                _perform()
+            }
+        }
+
+        return promise.futureResult
     }
 
     public func removeData(for url: URL) {

@@ -26,8 +26,10 @@ import Foundation
 import CoreGraphics
 import WolfLog
 import WolfFoundation
-import WolfConcurrency
+import WolfNIO
 import WolfPipe
+
+let cacheEventLoopGroup = NIOTSEventLoopGroup.init(loopCount: 3, defaultQoS: .`default`)
 
 public enum CacheError: Error {
     case miss(URL)
@@ -104,7 +106,7 @@ public class Cache<T: Serializable> {
         }
     }
 
-    @discardableResult public func retrieveObject(for url: URL) -> Promise<ValueType> {
+    @discardableResult public func retrieveObject(for url: URL) -> Future<ValueType> {
         logInfo("retrieveObjectForURL: \(url)", obj: self, group: .cache)
         return retrieveObject(at: 0, for: url)
     }
@@ -123,9 +125,12 @@ public class Cache<T: Serializable> {
         }
     }
 
-    private func retrieveObject(at layerIndex: Int, for url: URL) -> Promise<ValueType> {
+    private func retrieveObject(at layerIndex: Int, for url: URL) -> Future<ValueType> {
         let layer = layers[layerIndex]
-        return layer.retrieveData(for: url) ||> { data in
+
+        let a = layer.retrieveData(for: url)
+        let eventLoop = a.eventLoop
+        return a.flatMapThrowing { data in
             do {
                 let obj: ValueType = try SerializableType.deserialize(from: data)
                 logInfo("Found object for URL: \(url) layer: \(layer)", obj: self, group: .cache)
@@ -142,22 +147,16 @@ public class Cache<T: Serializable> {
                 }
                 throw error
             }
-        } ||? { (error, promise) in
+        }.flatMapError { error in
             guard error.isCacheMiss else {
-                promise.fail(error)
-                return
+                return eventLoop.future(error: error)
             }
 
             guard layerIndex < self.layers.count - 1 else {
-                promise.fail(CacheError.miss(url))
-                return
+                return eventLoop.future(error: CacheError.miss(url))
             }
 
-            run <| self.retrieveObject(at: layerIndex + 1, for: url) ||> { value in
-                promise.keep(value)
-            } ||! { error in
-                promise.fail(error)
-            }
+            return self.retrieveObject(at: layerIndex + 1, for: url)
         }
     }
 }

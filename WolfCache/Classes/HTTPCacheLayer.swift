@@ -32,7 +32,7 @@ import Foundation
 import ExtensibleEnumeratedName
 import WolfLog
 import WolfImage
-import WolfConcurrency
+import WolfNIO
 import WolfFoundation
 import WolfNetwork
 
@@ -42,11 +42,11 @@ import WolfNetwork
         public typealias ValueType = OSImage
 
         public func serialize() -> Data {
-            return NSKeyedArchiver.archivedData(withRootObject: self)
+            return try! NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
         }
 
         public static func deserialize(from data: Data) throws -> OSImage {
-            if let image = NSKeyedUnarchiver.unarchiveObject(with: data) as? OSImage {
+            if let image = try NSKeyedUnarchiver.unarchivedObject(ofClass: OSImage.self, from: data) {
                 return image
             } else {
                 throw ValidationError(message: "Invalid image data.", violation: "imageFormat")
@@ -65,14 +65,14 @@ public class HTTPCacheLayer: CacheLayer {
         // Do nothing.
     }
 
-    public func retrieveData(for url: URL) -> DataPromise {
+    public func retrieveData(for url: URL) -> Future<Data> {
         logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
         request.setMethod(.get)
 
-        return HTTP.retrieveData(with: request) ||% { promise in
-            let task = promise.task as! URLSessionDataTask
-            let response = task.response as! HTTPURLResponse
+        let a = HTTP.retrieveData(with: request)
+        let b: Future<Data> = a.flatMapThrowing { arg in
+            let (response, data) = arg
 
             var contentType: ContentType?
             if let contentTypeString = response.value(for: .contentType) {
@@ -87,9 +87,6 @@ public class HTTPCacheLayer: CacheLayer {
             guard encoding == nil else {
                 throw CacheError.unsupportedEncoding(url, encoding!)
             }
-
-            let data = promise.value!
-            //      return data
 
             if let contentType = contentType {
                 switch contentType {
@@ -107,13 +104,15 @@ public class HTTPCacheLayer: CacheLayer {
             } else {
                 return data
             }
-        } ||? { (error, promise) in
+        }
+        let c = b.flatMapErrorThrowing { error in
             if error.httpStatusCode == .notFound {
-                promise.fail(CacheError.miss(url))
+                throw CacheError.miss(url)
             } else {
-                promise.fail(error)
+                throw error
             }
         }
+        return c
     }
 
     public func removeData(for url: URL) {

@@ -24,10 +24,9 @@
 
 import Foundation
 import WolfLog
-import WolfConcurrency
+import WolfNIO
 
 public class MemoryCacheLayer: CacheLayer {
-
     private let cache = NSCache<NSURL, NSData>()
 
     public init() {
@@ -39,18 +38,18 @@ public class MemoryCacheLayer: CacheLayer {
         cache.setObject(data as NSData, forKey: url as NSURL)
     }
 
-    public func retrieveData(for url: URL) -> DataPromise {
-        func perform(promise: DataPromise) {
-            logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
-            let data = cache.object(forKey: url as NSURL) as NSData?
-            if let data = data {
-                promise.keep(data as Data)
-            } else {
-                promise.fail(CacheError.miss(url))
-            }
+    public func retrieveData(for url: URL) -> Future<Data> {
+        let promise = cacheEventLoopGroup.next().makePromise(of: Data.self)
+
+        logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
+        let data = cache.object(forKey: url as NSURL) as NSData?
+        if let data = data {
+            promise.succeed(data as Data)
+        } else {
+            promise.fail(CacheError.miss(url))
         }
 
-        return DataPromise(with: perform)
+        return promise.futureResult
     }
 
     public func removeData(for url: URL) {

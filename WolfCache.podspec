@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfCache'
-    s.version          = '2.0.0'
+    s.version          = '3.0.0'
     s.summary          = 'Framework for retrieving and caching frequently-used data, including in-memory, in-storage, and in-network layers.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfCache'
@@ -12,9 +12,9 @@ Pod::Spec.new do |s|
 
     s.source_files = 'WolfCache/Classes/**/*'
 
-    s.ios.deployment_target = '9.3'
-    s.macos.deployment_target = '10.13'
-    s.tvos.deployment_target = '11.0'
+    s.ios.deployment_target = '12.0'
+    s.macos.deployment_target = '10.14'
+    s.tvos.deployment_target = '12.0'
 
     s.module_name = 'WolfCache'
 
@@ -23,4 +23,5 @@ Pod::Spec.new do |s|
     s.dependency 'WolfImage'
     s.dependency 'WolfConcurrency'
     s.dependency 'WolfNetwork'
+    s.dependency 'WolfNIO'
 end

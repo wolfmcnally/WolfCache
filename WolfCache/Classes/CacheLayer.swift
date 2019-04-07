@@ -23,11 +23,11 @@
 //  SOFTWARE.
 
 import Foundation
-import WolfConcurrency
+import WolfNIO
 
 public protocol CacheLayer {
     func store(data: Data, for url: URL)
-    func retrieveData(for url: URL) -> DataPromise
+    func retrieveData(for url: URL) -> Future<Data>
     func removeData(for url: URL)
     func removeAll()
 }
