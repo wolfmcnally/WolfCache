@@ -33,7 +33,7 @@ import ExtensibleEnumeratedName
 import WolfLog
 import WolfImage
 import WolfNIO
-import WolfFoundation
+import WolfCore
 import WolfNetwork
 
 #if !os(Linux)

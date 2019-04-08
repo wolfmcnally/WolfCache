@@ -25,9 +25,8 @@
 import Foundation
 import CoreGraphics
 import WolfLog
-import WolfFoundation
+import WolfCore
 import WolfNIO
-import WolfPipe
 
 let cacheEventLoopGroup = NIOTSEventLoopGroup.init(loopCount: 3, defaultQoS: .`default`)
 
