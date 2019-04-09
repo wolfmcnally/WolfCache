@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfCache'
-    s.version          = '3.0.1'
+    s.version          = '3.0.2'
     s.summary          = 'Framework for retrieving and caching frequently-used data, including in-memory, in-storage, and in-network layers.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfCache'
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
     s.dependency 'WolfLog'
     s.dependency 'WolfCore'
-    s.dependency 'WolfImage'
+    s.dependency 'WolfGraphics'
     s.dependency 'WolfNetwork'
     s.dependency 'WolfNIO'
 end

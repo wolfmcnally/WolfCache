@@ -31,7 +31,7 @@ import Foundation
 
 import ExtensibleEnumeratedName
 import WolfLog
-import WolfImage
+import WolfGraphics
 import WolfNIO
 import WolfCore
 import WolfNetwork
