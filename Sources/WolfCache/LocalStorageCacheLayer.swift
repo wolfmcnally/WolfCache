@@ -197,7 +197,7 @@ public class LocalStorageCacheLayer: CacheLayer {
     }
 
     public func retrieveData(for url: URL) -> Future<Data> {
-        let promise = cacheEventLoopGroup.next().makePromise(of: Data.self)
+        let promise = MainEventLoop.shared.makePromise(of: Data.self)
 
         func _perform() {
             do {

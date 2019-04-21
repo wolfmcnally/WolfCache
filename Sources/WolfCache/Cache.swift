@@ -28,8 +28,6 @@ import WolfLog
 import WolfCore
 import WolfNIO
 
-let cacheEventLoopGroup = NIOTSEventLoopGroup.init(loopCount: 3, defaultQoS: .`default`)
-
 public enum CacheError: Error {
     case miss(URL)
     case unsupportedEncoding(URL, String)

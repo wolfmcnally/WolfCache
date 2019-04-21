@@ -39,7 +39,7 @@ public class MemoryCacheLayer: CacheLayer {
     }
 
     public func retrieveData(for url: URL) -> Future<Data> {
-        let promise = cacheEventLoopGroup.next().makePromise(of: Data.self)
+        let promise = MainEventLoop.shared.makePromise(of: Data.self)
 
         logTrace("retrieveDataForURL: \(url)", obj: self, group: .cache)
         let data = cache.object(forKey: url as NSURL) as NSData?

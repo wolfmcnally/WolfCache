@@ -96,7 +96,7 @@ public class HTTPCacheLayer: CacheLayer {
                     } else {
                         throw CacheError.badImageData(url)
                     }
-                case ContentType.pdf:
+                case ContentType.pdf, ContentType.svg:
                     return data
                 default:
                     throw CacheError.unsupportedEncoding(url, contentType.rawValue)
