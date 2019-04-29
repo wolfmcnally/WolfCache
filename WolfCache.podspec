@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfCache'
-    s.version          = '3.0.3'
+    s.version          = '3.0.4'
     s.summary          = 'Framework for retrieving and caching frequently-used data, including in-memory, in-storage, and in-network layers.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfCache'
