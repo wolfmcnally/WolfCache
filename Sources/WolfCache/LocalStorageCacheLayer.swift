@@ -206,24 +206,18 @@ public class LocalStorageCacheLayer: CacheLayer {
                 switch try selectStatement.step() {
                 case .row:
                     let data = selectStatement.blobValue(forColumnIndex: 0)!
-                    dispatchOnMain {
-                        promise.succeed(data)
-                    }
+                    promise.succeed(data)
 
                     let updateStatement = try db.prepare(sql: "UPDATE cache SET dateAccessed=CURRENT_TIMESTAMP WHERE url=:url")
                     updateStatement.bindParameter(named: "url", toURL: url)
                     try updateStatement.step()
 
                 case .done:
-                    dispatchOnMain {
-                        promise.fail(CacheError.miss(url))
-                    }
+                    promise.fail(CacheError.miss(url))
                 }
             } catch let error {
                 logError("Retrieving cache data for URL: \(url) error: \(error).", obj: self)
-                dispatchOnMain {
-                    promise.fail(error)
-                }
+                promise.fail(error)
             }
         }
 
