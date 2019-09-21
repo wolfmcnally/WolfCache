@@ -55,6 +55,10 @@ import WolfNetwork
     }
 #endif
 
+extension ContentType {
+    public static let image = ContentType("image")
+}
+
 public class HTTPCacheLayer: CacheLayer {
     public init() {
         logTrace("init", obj: self, group: .cache)
@@ -90,7 +94,7 @@ public class HTTPCacheLayer: CacheLayer {
 
             if let contentType = contentType {
                 switch contentType {
-                case ContentType.jpg, ContentType.png, ContentType.gif:
+                case ContentType.jpg, ContentType.png, ContentType.gif, ContentType.image:
                     if let serializedImageData = OSImage(data: data)?.serialize() {
                         return serializedImageData
                     } else {
