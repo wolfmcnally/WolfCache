@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "WolfCache",
     platforms: [
-        .iOS(.v12), .macOS(.v10_14), .tvOS(.v12)
+        .iOS(.v12), .macOS(.v10_13), .tvOS(.v12)
     ],
     products: [
         .library(
