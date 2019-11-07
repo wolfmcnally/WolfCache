@@ -16,7 +16,7 @@ let package = Package(
         .package(url: "https://github.com/wolfmcnally/WolfLog", from: "2.0.0"),
         .package(url: "https://github.com/wolfmcnally/WolfNIO", from: "1.0.0"),
         .package(url: "https://github.com/wolfmcnally/WolfGraphics", from: "1.0.0"),
-        .package(url: "https://github.com/wolfmcnally/WolfNetwork", from: "3.0.0"),
+        .package(url: "https://github.com/wolfmcnally/WolfNetwork", from: "4.0.0"),
     ],
     targets: [
         .target(
