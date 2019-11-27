@@ -74,7 +74,7 @@ public class HTTPCacheLayer: CacheLayer {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
         request.setMethod(.get)
 
-        let a = HTTP.retrieveData(with: request)
+        let a = HTTPNIO.retrieveData(with: request)
         let b: Future<Data> = a.flatMapThrowing { arg in
             let (response, data) = arg
 
