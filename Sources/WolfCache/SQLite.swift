@@ -24,7 +24,7 @@
 
 import Foundation
 import SQLite3
-import WolfCore
+import WolfFoundation
 
 //
 // Useful: http://stackoverflow.com/questions/24102775/accessing-an-sqlite-database-in-swift

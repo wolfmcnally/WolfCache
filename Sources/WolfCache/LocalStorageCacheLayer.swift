@@ -25,7 +25,8 @@
 import Foundation
 import WolfLog
 import WolfNIO
-import WolfCore
+import WolfFoundation
+import WolfConcurrency
 
 public class LocalStorageCacheLayer: CacheLayer {
     public let fileURL: URL

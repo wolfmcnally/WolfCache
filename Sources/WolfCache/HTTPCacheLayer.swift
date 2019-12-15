@@ -31,10 +31,10 @@ import Foundation
 
 import ExtensibleEnumeratedName
 import WolfLog
-import WolfGraphics
 import WolfNIO
-import WolfCore
 import WolfNetwork
+import WolfImage
+import WolfFoundation
 
 #if !os(Linux)
     // Support the Serializable protocol used for caching

@@ -1,4 +1,4 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 import PackageDescription
 
 let package = Package(
@@ -9,24 +9,27 @@ let package = Package(
     products: [
         .library(
             name: "WolfCache",
+            type: .dynamic,
             targets: ["WolfCache"]),
         ],
     dependencies: [
-        .package(url: "https://github.com/wolfmcnally/WolfCore", from: "5.0.0"),
+        .package(url: "https://github.com/wolfmcnally/WolfFoundation", from: "5.0.0"),
         .package(url: "https://github.com/wolfmcnally/WolfLog", from: "2.0.0"),
         .package(url: "https://github.com/wolfmcnally/WolfNIO", from: "1.0.0"),
-        .package(url: "https://github.com/wolfmcnally/WolfGraphics", from: "1.0.0"),
+        .package(url: "https://github.com/wolfmcnally/WolfConcurrency", from: "3.0.0"),
         .package(url: "https://github.com/wolfmcnally/WolfNetwork", from: "5.0.0"),
+        .package(url: "https://github.com/wolfmcnally/WolfImage", from: "4.0.0")
     ],
     targets: [
         .target(
             name: "WolfCache",
             dependencies: [
-                "WolfCore",
+                "WolfFoundation",
                 "WolfLog",
                 "WolfNIO",
-                "WolfGraphics",
+                "WolfConcurrency",
                 "WolfNetwork",
+                "WolfImage"
             ])
         ]
 )

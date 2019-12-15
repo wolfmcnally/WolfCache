@@ -25,8 +25,8 @@
 import Foundation
 import CoreGraphics
 import WolfLog
-import WolfCore
 import WolfNIO
+import WolfFoundation
 
 public enum CacheError: Error {
     case miss(URL)
